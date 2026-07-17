@@ -262,6 +262,55 @@
   }
   .learn-btn.on{ border-color:var(--ok); color:var(--ok); background:var(--ok-bg); font-weight:700; }
 
+  /* ---------- 分数表記 ---------- */
+  .fr{
+    display:inline-flex; flex-direction:column; align-items:center;
+    vertical-align:middle; margin:0 3px; line-height:1.35; font-size:.92em;
+    font-variant-numeric:normal;
+  }
+  .fr .nu{ padding:0 5px; }
+  .fr .de{ padding:0 5px; border-top:1.3px solid currentColor; }
+  .formula .fr{ font-family:var(--serif); }
+
+  /* ---------- welcome / users ---------- */
+  .welcome{ text-align:center; padding-top:9vh; }
+  .welcome .big-icon{ font-size:3rem; }
+  .welcome h1{ font-family:var(--serif); font-size:1.45rem; margin:.6rem 0 .3rem; font-weight:600; }
+  .welcome p{ color:var(--ink2); font-size:.88rem; margin:0 0 22px; }
+  .nick-input{
+    width:100%; border:1.5px solid var(--line); background:var(--card); color:var(--ink);
+    border-radius:14px; padding:14px 16px; font-size:1.05rem; text-align:center;
+    font-family:inherit; margin-bottom:12px;
+  }
+  .nick-input:focus{ outline:3px solid var(--c1); outline-offset:1px; }
+  .user-list{ display:flex; flex-direction:column; gap:9px; margin-top:26px; }
+  .user-list .lbl{ font-size:.76rem; color:var(--muted); }
+  .user-pick{
+    width:100%; border:1.5px solid var(--line); background:var(--card); color:var(--ink);
+    border-radius:13px; padding:13px; cursor:pointer; font-size:.95rem; font-weight:700;
+    display:flex; align-items:center; gap:10px; text-align:left;
+  }
+  .user-pick .prog{ margin-left:auto; font-size:.74rem; color:var(--muted); font-weight:500; font-variant-numeric:tabular-nums; }
+  .user-chip{
+    position:absolute; top:14px; left:0;
+    border:1.5px solid var(--line); background:var(--card); color:var(--ink2);
+    border-radius:99px; padding:7px 13px; cursor:pointer; font-size:.78rem; max-width:40%;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+
+  /* ---------- resume card ---------- */
+  .resume-card{
+    width:100%; text-align:left; margin-top:16px;
+    border:1.5px solid var(--c1); background:var(--c1-bg); border-radius:16px;
+    padding:14px 16px; cursor:pointer; display:flex; align-items:center; gap:12px;
+  }
+  .resume-card .icon{ font-size:1.4rem; }
+  .resume-card b{ color:var(--c1); }
+  .resume-card .sub{ font-size:.78rem; color:var(--ink2); }
+
+  /* ---------- freq badge ---------- */
+  .chip.freq{ background:var(--line); color:var(--ink2); font-weight:600; }
+
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; animation:none !important; }
   }
@@ -413,7 +462,7 @@ var QUESTIONS = [
     "セイビンの残響式によれば、残響時間は室容積に比例し、等価吸音面積に反比例する。"],
   ans:3,
   core:"吸音率2倍→約3dB減。6dBは点音源の距離減衰と混同させる罠。",
-  detail:"<div class='formula'>点音源：距離2倍で −6dB\n線音源：距離2倍で −3dB\n吸音面積2倍：10log₁₀2 ≈ −3dB\n残響時間 T = 0.161V/A</div><p>「6dBと3dBの取り違え」が音響分野の定番の誤答パターン。</p>" },
+  detail:"<div class='formula'>点音源：距離2倍で −6dB\n線音源：距離2倍で −3dB\n吸音面積2倍：10log₁₀2 ≈ −3dB\n残響時間 T = 0.161{V|A}</div><p>「6dBと3dBの取り違え」が音響分野の定番の誤答パターン。</p>" },
 
 { subj:"k2", tag:"日照・日射（毎年1問・計算）",
   text:"南中時の太陽高度が30度のときの水平面直達日射量はJ<sub>H</sub>であった。法線面直達日射量J<sub>N</sub>と南向き鉛直面直達日射量J<sub>V</sub>の組合せとして、<b>最も適当なもの</b>はどれか。（sin30°=1/2、cos30°=√3/2）",
@@ -424,7 +473,7 @@ var QUESTIONS = [
     "J<sub>N</sub>＝√3J<sub>H</sub>、J<sub>V</sub>＝2J<sub>H</sub>"],
   ans:1,
   core:"J_H=J_N·sin h、J_V=J_N·cos h の射影関係に当てはめるだけ。",
-  detail:"<div class='formula'>J_N = J_H / sin30° = J_H ÷ (1/2) = 2J_H\nJ_V = J_N × cos30° = 2J_H × (√3/2) = √3J_H</div><p>過去問は太陽高度60°設定が多い。30°ではsinとcosの値が入れ替わる点に注意。</p>" },
+  detail:"<div class='formula'>J_N = {J_H|sin30°} = J_H ÷ {1|2} = 2J_H\nJ_V = J_N × cos30° = 2J_H × {√3|2} = √3J_H</div><p>過去問は太陽高度60°設定が多い。30°ではsinとcosの値が入れ替わる点に注意。</p>" },
 
 /* ---------- 学科Ⅲ（法規） ---------- */
 { subj:"k3", tag:"建築士法（毎年2〜4問で最多）",
@@ -518,19 +567,19 @@ var QUESTIONS = [
 /* ---------- 学科Ⅳ（構造）：本試験過去問（令和7年） ---------- */
 { subj:"k4", tag:"令和7年 No.1｜応力度", img:"s1", numOnly:true, ans:1,
   core:"平均成分 P/A＝2σ、曲げ成分 M/Z＝σ に分解 → e＝D/12",
-  detail:"<div class='formula'>台形分布（σ〜3σ）＝ 一様圧縮2σ ＋ 曲げ±σ\nP/A = 2σ → P = 2σBD\nM/Z = σ、M = P·e、Z = BD²/6\n→ 2σBD·e·6/(BD²) = σ → e = D/12</div><p>全断面圧縮の台形分布は「平均＋曲げ」に分解するのが鉄則。e=D/6（核半径）は「縁応力度ゼロ」のときで、選択肢3はその引っかけ。</p>" },
+  detail:"<div class='formula'>台形分布（σ〜3σ）＝ 一様圧縮2σ ＋ 曲げ±σ\n{P|A} = 2σ → P = 2σBD\n{M|Z} = σ、M = P·e、Z = {BD²|6}\n→ e = {D|12}</div><p>全断面圧縮の台形分布は「平均＋曲げ」に分解するのが鉄則。e={D|6}（核半径）は「縁応力度ゼロ」のときで、選択肢3はその引っかけ。</p>" },
 
 { subj:"k4", tag:"令和7年 No.2｜たわみ", img:"s2", numOnly:true, ans:2,
   core:"張出し梁＝支点回転による剛体変位＋張出し部の片持ちたわみ → 1:2",
-  detail:"<div class='formula'>梁A（片持ち）: δA = Pl³/3EI\n梁B（張出し）:\n 支点間で生じる回転 θ = Pl·l/3EI = Pl²/3EI\n 剛体変位 θ·l = Pl³/3EI\n ＋張出し部自体の曲げ Pl³/3EI\n δB = 2Pl³/3EI → δA:δB = 1:2</div><p>張出し梁のたわみは「回転×腕の長さ」を忘れないこと。これを落とすと1:1を選んでしまう。</p>" },
+  detail:"<div class='formula'>梁A（片持ち）: δA = {Pl³|3EI}\n梁B（張出し）:\n 支点間で生じる回転 θ = {Pl·l|3EI} = {Pl²|3EI}\n 剛体変位 θ·l = {Pl³|3EI}\n ＋張出し部自体の曲げ {Pl³|3EI}\n δB = {2Pl³|3EI} → δA:δB = 1:2</div><p>張出し梁のたわみは「回転×腕の長さ」を忘れないこと。これを落とすと1:1を選んでしまう。</p>" },
 
 { subj:"k4", tag:"令和7年 No.3｜崩壊荷重", img:"s3", numOnly:true, ans:2,
   core:"節点ヒンジは取り合う部材Mpの小さい方。4隅の合計800 ÷ h4m ＝ 200kN",
-  detail:"<div class='formula'>各隅のヒンジモーメント＝取り合う部材の min(Mp)\n左上: min(600,200)=200　右上: min(100,200)=100\n左下: min(600,400)=400　右下: min(100,400)=100\n仮想仕事: Pu·4·θ = (200+100+400+100)·θ\nPu = 800/4 = 200kN</div><p>柱・梁のMpが異なる問題は「弱い方に塑性ヒンジ」が鉄則。すべて柱側と思い込むと600系の数字に引っ張られる。</p>" },
+  detail:"<div class='formula'>各隅のヒンジモーメント＝取り合う部材の min(Mp)\n左上: min(600,200)=200　右上: min(100,200)=100\n左下: min(600,400)=400　右下: min(100,400)=100\n仮想仕事: Pu·4·θ = (200+100+400+100)·θ\nPu = {800|4} = 200kN</div><p>柱・梁のMpが異なる問題は「弱い方に塑性ヒンジ」が鉄則。すべて柱側と思い込むと600系の数字に引っ張られる。</p>" },
 
 { subj:"k4", tag:"令和7年 No.4｜ブレース架構", img:"s4", numOnly:true, ans:3,
   core:"柱C:柱D＝3:7 が正しい（3:10 が誤り）。ブレース鉛直成分3Pが柱Dに乗る。",
-  detail:"<div class='formula'>1階の層せん断力 = 3P+P = 4P（ピン柱は負担せずブレースEが全部負担）\nN_E = 4P × 5/4 = 5P（肢4は正しい）\n2階ラーメンの転倒: 3P×3m ÷ 4m = 2.25P（柱軸力）\n柱C = 2.25P\n柱D = 2.25P + ブレース鉛直成分3P = 5.25P\nC:D = 2.25:5.25 = 3:7 ≠ 3:10 → 肢3が誤り</div><p>「ピン柱＋ブレース」の層はブレースが水平力を全負担。ブレースの鉛直成分が取り付く柱の軸力に加算される点が急所。</p>" },
+  detail:"<div class='formula'>1階の層せん断力 = 3P+P = 4P（ピン柱は負担せずブレースEが全部負担）\nN_E = 4P × {5|4} = 5P（肢4は正しい）\n2階ラーメンの転倒: {3P×3m|4m} = 2.25P（柱軸力）\n柱C = 2.25P\n柱D = 2.25P + ブレース鉛直成分3P = 5.25P\nC:D = 2.25:5.25 = 3:7 ≠ 3:10 → 肢3が誤り</div><p>「ピン柱＋ブレース」の層はブレースが水平力を全負担。ブレースの鉛直成分が取り付く柱の軸力に加算される点が急所。</p>" },
 
 { subj:"k4", tag:"令和7年 No.5｜トラス", img:"s5", numOnly:true, ans:4,
   core:"斜材の軸力＝切断面より上の水平力合計×√2。右トラス2層目は2P→N_D=2√2P。",
@@ -538,7 +587,7 @@ var QUESTIONS = [
 
 { subj:"k4", tag:"令和7年 No.6｜座屈", img:"s6", numOnly:true, ans:2,
   core:"座屈長さ：A=2×h、B=0.7×2h=1.4h、C=1×2h=2h → PA=PC＜PB",
-  detail:"<div class='formula'>A: 柱脚ピン＋剛梁（水平移動自由）→ 座屈長さ 2h\nB: 水平移動拘束＋剛梁 → 0.7×2h = 1.4h\nC: 柱脚固定＋剛梁（移動自由）→ 1.0×2h = 2h\nPe = π²EI/le² より\nPA = PC = π²EI/4h² ＜ PB = π²EI/1.96h²</div><p>座屈長さ係数（両端固定0.5／固定+ピン0.7／両端ピン1.0／固定+自由2.0）に「水平移動の可否」を掛け合わせて判断する。移動が自由だと座屈長さは大きくなる。</p>" },
+  detail:"<div class='formula'>A: 柱脚ピン＋剛梁（水平移動自由）→ 座屈長さ 2h\nB: 水平移動拘束＋剛梁 → 0.7×2h = 1.4h\nC: 柱脚固定＋剛梁（移動自由）→ 1.0×2h = 2h\nPe = {π²EI|le²} より\nPA = PC = {π²EI|4h²} ＜ PB = {π²EI|1.96h²}</div><p>座屈長さ係数（両端固定0.5／固定+ピン0.7／両端ピン1.0／固定+自由2.0）に「水平移動の可否」を掛け合わせて判断する。移動が自由だと座屈長さは大きくなる。</p>" },
 
 /* ---------- 学科Ⅴ（施工） ---------- */
 { subj:"k5", tag:"コンクリート工事（毎年2問）",
@@ -634,25 +683,25 @@ var QUESTIONS = [
 /* {id, cat:"formula"|"term", subj, front, back(html)} */
 var CARDS = [
 /* === 数式：環境・設備 === */
-{id:"f01",cat:"formula",subj:"k2",front:"熱貫流抵抗・熱貫流率",back:"<div class='formula'>R = 1/αi + Σ(d/λ) + 1/αo\nU = 1/R [W/(m²·K)]</div>表面熱伝達抵抗（1/α）は壁厚と無関係。だから壁厚2倍でもRは2倍にならない。"},
-{id:"f02",cat:"formula",subj:"k2",front:"必要換気量（CO₂基準）",back:"<div class='formula'>Q = M / (Ci − Co)</div>発生量M÷濃度差。居室の必要換気量は1人あたり約30m³/hが目安。"},
+{id:"f01",cat:"formula",subj:"k2",front:"熱貫流抵抗・熱貫流率",back:"<div class='formula'>R = {1|αi} + Σ{d|λ} + {1|αo}\nU = {1|R} [W/(m²·K)]</div>表面熱伝達抵抗（1/α）は壁厚と無関係。だから壁厚2倍でもRは2倍にならない。"},
+{id:"f02",cat:"formula",subj:"k2",front:"必要換気量（CO₂基準）",back:"<div class='formula'>Q = {M|Ci − Co}</div>発生量M÷濃度差。居室の必要換気量は1人あたり約30m³/hが目安。"},
 {id:"f03",cat:"formula",subj:"k2",front:"温度差換気（重力換気）",back:"<div class='formula'>Q ∝ A·√(h·Δt)</div>開口面積に比例、上下開口の高低差hと内外温度差Δtの「平方根」に比例。h・Δtを4倍にしても換気量は2倍。"},
-{id:"f04",cat:"formula",subj:"k2",front:"点光源の照度（逆二乗則）",back:"<div class='formula'>E = I / r²　（面が傾くと ×cosθ）</div>距離2倍で照度1/4。入射角の余弦則とセットで。"},
-{id:"f05",cat:"formula",subj:"k2",front:"昼光率",back:"<div class='formula'>D = 室内のある点の照度 / 全天空照度 ×100%</div>直射日光は含めない。全天空照度が変わっても昼光率は変わらないのがポイント。"},
+{id:"f04",cat:"formula",subj:"k2",front:"点光源の照度（逆二乗則）",back:"<div class='formula'>E = {I|r²}　（面が傾くと ×cosθ）</div>距離2倍で照度1/4。入射角の余弦則とセットで。"},
+{id:"f05",cat:"formula",subj:"k2",front:"昼光率",back:"<div class='formula'>D = {室内のある点の照度|全天空照度} ×100%</div>直射日光は含めない。全天空照度が変わっても昼光率は変わらないのがポイント。"},
 {id:"f06",cat:"formula",subj:"k2",front:"音の距離減衰（点音源／線音源）",back:"<div class='formula'>点音源：距離2倍 → −6dB\n線音源（道路）：距離2倍 → −3dB</div>「6と3」の取り違えが定番の罠。"},
 {id:"f07",cat:"formula",subj:"k2",front:"音圧レベルの合成・吸音の効果",back:"<div class='formula'>同レベル2音源の合成：+3dB\n吸音面積2倍：−3dB</div>どちらも 10log₁₀2 ≈ 3dB。"},
-{id:"f08",cat:"formula",subj:"k2",front:"残響時間（Sabineの式）",back:"<div class='formula'>T = 0.161 V / A</div>室容積Vに比例、等価吸音面積Aに反比例。人が入るとAが増えてTは短くなる。"},
+{id:"f08",cat:"formula",subj:"k2",front:"残響時間（Sabineの式）",back:"<div class='formula'>T = 0.161{V|A}</div>室容積Vに比例、等価吸音面積Aに反比例。人が入るとAが増えてTは短くなる。"},
 {id:"f09",cat:"formula",subj:"k2",front:"直達日射量の射影関係",back:"<div class='formula'>J_H = J_N · sin h\nJ_V = J_N · cos h</div>h：太陽高度。高度60°と30°でsin・cosの値が入れ替わる。"},
-{id:"f10",cat:"formula",subj:"k2",front:"相対湿度と露点",back:"<div class='formula'>相対湿度 = 水蒸気分圧 / 飽和水蒸気分圧 ×100%</div>露点＝冷やしていって飽和（結露開始）する温度。温度が下がると飽和分圧が下がる→相対湿度は上がる。"},
+{id:"f10",cat:"formula",subj:"k2",front:"相対湿度と露点",back:"<div class='formula'>相対湿度 = {水蒸気分圧|飽和水蒸気分圧} ×100%</div>露点＝冷やしていって飽和（結露開始）する温度。温度が下がると飽和分圧が下がる→相対湿度は上がる。"},
 /* === 数式：構造 === */
-{id:"f11",cat:"formula",subj:"k4",front:"断面性能（長方形断面）",back:"<div class='formula'>I = bh³/12（断面二次モーメント）\nZ = bh²/6（断面係数）\nZp = bh²/4（塑性断面係数）</div>hの効き方（3乗・2乗）を体で覚える。"},
-{id:"f12",cat:"formula",subj:"k4",front:"応力度と核半径",back:"<div class='formula'>σ = N/A ± M/Z</div>全断面圧縮でいられる限界は e ≤ D/6（核半径）。台形分布の問題は「平均＋曲げ」に分解。"},
-{id:"f13",cat:"formula",subj:"k4",front:"たわみの4つの型",back:"<div class='formula'>片持ち・先端集中：Pl³/3EI\n単純梁・中央集中：Pl³/48EI\n単純梁・等分布：5wl⁴/384EI\n片持ち・等分布：wl⁴/8EI</div>張出し梁は「支点回転×腕」を足し忘れない。"},
-{id:"f14",cat:"formula",subj:"k4",front:"弾性座屈荷重と座屈長さ",back:"<div class='formula'>Pe = π²EI / le²</div>座屈長さ係数：両端固定0.5／固定+ピン0.7／両端ピン1.0／固定+自由（水平移動自由）2.0。移動が自由だとleは大きくなる。"},
-{id:"f15",cat:"formula",subj:"k4",front:"固有周期",back:"<div class='formula'>T = 2π√(m/k)</div>質量が大きいほど・剛性が低いほど周期は長い。建物高さが高いほどTは長い（略算 T=0.02h〜0.03h）。"},
+{id:"f11",cat:"formula",subj:"k4",front:"断面性能（長方形断面）",back:"<div class='formula'>I = {bh³|12}（断面二次モーメント）\nZ = {bh²|6}（断面係数）\nZp = {bh²|4}（塑性断面係数）</div>hの効き方（3乗・2乗）を体で覚える。"},
+{id:"f12",cat:"formula",subj:"k4",front:"応力度と核半径",back:"<div class='formula'>σ = {N|A} ± {M|Z}</div>全断面圧縮でいられる限界は e ≤ {D|6}（核半径）。台形分布の問題は「平均＋曲げ」に分解。"},
+{id:"f13",cat:"formula",subj:"k4",front:"たわみの4つの型",back:"<div class='formula'>片持ち・先端集中：{Pl³|3EI}\n単純梁・中央集中：{Pl³|48EI}\n単純梁・等分布：{5wl⁴|384EI}\n片持ち・等分布：{wl⁴|8EI}</div>張出し梁は「支点回転×腕」を足し忘れない。"},
+{id:"f14",cat:"formula",subj:"k4",front:"弾性座屈荷重と座屈長さ",back:"<div class='formula'>Pe = {π²EI|le²}</div>座屈長さ係数：両端固定0.5／固定+ピン0.7／両端ピン1.0／固定+自由（水平移動自由）2.0。移動が自由だとleは大きくなる。"},
+{id:"f15",cat:"formula",subj:"k4",front:"固有周期",back:"<div class='formula'>T = 2π√{m|k}</div>質量が大きいほど・剛性が低いほど周期は長い。建物高さが高いほどTは長い（略算 T=0.02h〜0.03h）。"},
 {id:"f16",cat:"formula",subj:"k4",front:"地震層せん断力",back:"<div class='formula'>Qi = Ci · ΣWi\nCi = Z · Rt · Ai · C₀</div>C₀：一次設計0.2以上／保有水平耐力計算1.0以上。Aiは上階ほど大きい。Rtは軟弱地盤ほど大きい。"},
 {id:"f17",cat:"formula",subj:"k4",front:"必要保有水平耐力",back:"<div class='formula'>Qun = Ds · Fes · Qud</div>Ds：構造特性係数（靱性が高いほど小さい、0.25〜0.55）。Fes：剛性率・偏心率による割増し（1.0以上）。"},
-{id:"f18",cat:"formula",subj:"k4",front:"四分割法（木造壁量）",back:"<div class='formula'>壁量充足率 = 存在壁量 / 必要壁量\n壁率比 = 小さい方 / 大きい方 ≥ 0.5</div>両側の充足率がともに1超なら壁率比の検討は不要。"},
+{id:"f18",cat:"formula",subj:"k4",front:"四分割法（木造壁量）",back:"<div class='formula'>壁量充足率 = {存在壁量|必要壁量}\n壁率比 = {小さい方の充足率|大きい方の充足率} ≥ 0.5</div>両側の充足率がともに1超なら壁率比の検討は不要。"},
 {id:"f19",cat:"formula",subj:"k4",front:"崩壊荷重（仮想仕事法）",back:"<div class='formula'>Pu·δ = Σ(Mp·θ)</div>節点のヒンジは取り合う部材のMpの「小さい方」。ヒンジが生じない部材のMpは計算に使わない。"},
 {id:"f20",cat:"formula",subj:"k4",front:"鋼材のヤング係数",back:"<div class='formula'>E = 2.05×10⁵ N/mm²</div>SS400でも高張力鋼でも「一定」。強度が上がってもEは変わらない＝たわみは材質グレードでは改善しない。"},
 /* === 語句：計画 === */
@@ -702,6 +751,44 @@ var CARDS = [
 {id:"t40",cat:"term",subj:"k5",front:"湿潤養生期間（標準・短期）",back:"早強3日以上／普通・中庸熱5日以上／高炉B種等の混合セメントB種は<b>7日以上</b>。"}
 ];
 
+/* ---------- 頻出度（過去10年・1,250問の分析による） ---------- */
+var FREQ = {
+  "建築積算（毎年No.19）":"過去10年で10回・毎年出題",
+  "都市計画・まちづくり（毎年2問）":"過去10年で約20問・毎年2問",
+  "バリアフリー（ほぼ毎年No.9）":"過去10年で9回出題",
+  "日本建築史（主にNo.2）":"過去10年で8回出題",
+  "寸法計画（主にNo.7・8）":"過去10年で9回以上出題",
+  "マネジメント（毎年No.20）":"過去10年で10回・毎年出題",
+  "空調設備（毎年3問で最頻出）":"過去10年で30問・科目内1位",
+  "給排水設備（毎年2問）":"過去10年で20問出題",
+  "電気設備（毎年2問）":"過去10年で20問出題",
+  "伝熱・結露（毎年出題）":"過去10年で16問出題",
+  "音響（毎年2問前後）":"過去10年で約20問出題",
+  "日照・日射（毎年1問・計算）":"過去10年で10回・毎年出題",
+  "建築士法（毎年2〜4問で最多）":"過去10年で約30問・科目内1位",
+  "構造規定（毎年3問固定）":"過去10年で30問・毎年3問",
+  "避難施設（毎年2問）":"過去10年で約20問出題",
+  "防火規定（毎年2問）":"過去10年で約20問出題",
+  "確認・手続き（毎年No.3・4）":"過去10年で約20問出題",
+  "都市計画法（毎年1問）":"過去10年で10回・毎年出題",
+  "消防法（毎年1問）":"過去10年で10回・毎年出題",
+  "バリアフリー法（毎年1問）":"過去10年で10回・毎年出題",
+  "令和7年 No.1｜応力度":"この計算の型は過去10年で9回",
+  "令和7年 No.2｜たわみ":"この計算の型は過去10年で10回・毎年",
+  "令和7年 No.3｜崩壊荷重":"この計算の型は過去10年で7回",
+  "令和7年 No.4｜ブレース架構":"静定架構の計算は過去10年で10回・毎年",
+  "令和7年 No.5｜トラス":"この計算の型は過去10年で10回・毎年",
+  "令和7年 No.6｜座屈":"この計算の型は過去10年で5回",
+  "コンクリート工事（毎年2問）":"過去10年で20問・科目内1位タイ",
+  "鉄骨工事（毎年2問）":"過去10年で20問・科目内1位タイ",
+  "耐震改修（毎年2問）":"過去10年で20問・科目内1位タイ",
+  "仮設工事（毎年1問）":"過去10年で10回・毎年出題",
+  "土工事・山留め（毎年1問）":"過去10年で10回・毎年出題",
+  "杭工事（毎年1問）":"過去10年で10回・毎年出題",
+  "鉄筋工事（毎年1問）":"過去10年で10回・毎年出題",
+  "型枠工事（毎年1問）":"過去10年で10回・毎年出題"
+};
+
 /* ---------- trends (compact) ---------- */
 var TRENDS = {
   k1:{ pts:["<b>No.18〜20（契約約款・積算・マネジメント）は10年間皆勤。</b>最優先で固定得点化する",
@@ -742,13 +829,27 @@ var TRENDS = {
    - formula/term行: front,back を使用                                   */
 var SHEET_CSV_URL = "";
 
-/* ================= state ================= */
-var KEY = "ikkyu-quiz-v1";
-var store = load();
-function load(){
-  try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; }
+/* ================= state（ユーザー別プロファイル） ================= */
+var PKEY = "ikkyu-profiles-v1";
+var profiles = pload();
+var store = null; /* 現在のユーザーのデータ */
+function pload(){
+  try{
+    var p = JSON.parse(localStorage.getItem(PKEY));
+    if(p && p.users) return p;
+  }catch(e){}
+  /* 旧バージョン（単一ユーザー）のデータがあれば「ゲスト」として引き継ぐ */
+  var old = null;
+  try{ old = JSON.parse(localStorage.getItem("ikkyu-quiz-v1")); }catch(e){}
+  return { current:null, users: old ? {"ゲスト": old} : {} };
 }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
+function save(){ try{ localStorage.setItem(PKEY, JSON.stringify(profiles)); }catch(e){} }
+function setUser(name){
+  profiles.current = name;
+  profiles.users[name] = profiles.users[name] || {};
+  store = profiles.users[name];
+  save(); applyTheme();
+}
 function subjQuestions(sid){ return QUESTIONS.filter(function(q){return q.subj===sid;}); }
 function subjColor(sid){ var s=SUBJECTS.find(function(x){return x.id===sid;}); return {c:"var("+s.color+")", bg:"var("+s.colorBg+")"}; }
 function answeredCount(sid){
@@ -767,7 +868,7 @@ var cardsTab = "formula", cardsSubj = "all";
 /* ---------- theme ---------- */
 var THEME_LABEL = { auto:"🌗 自動", light:"☀️ ライト", dark:"🌙 ダーク" };
 function applyTheme(){
-  var t = store._theme || "auto";
+  var t = (store && store._theme) || "auto";
   if(t === "auto") document.documentElement.removeAttribute("data-theme");
   else document.documentElement.setAttribute("data-theme", t);
 }
@@ -777,7 +878,12 @@ function cycleTheme(){
   store._theme = seq[(seq.indexOf(cur)+1) % 3];
   save(); applyTheme(); renderHome();
 }
-applyTheme();
+
+/* ---------- 分数表記（{分子|分母} → 縦積み分数） ---------- */
+function frac(html){
+  return (html || "").replace(/\{([^{}|]+)\|([^{}|]+)\}/g,
+    '<span class="fr"><span class="nu">$1</span><span class="de">$2</span></span>');
+}
 
 /* ---------- CSV loader (Google Sheets等) ---------- */
 function parseCSV(text){
@@ -825,7 +931,7 @@ function loadExternalData(){
         added++;
       }
     });
-    if(added && !session) renderHome();
+    if(added && !session && store) renderHome();
   }).catch(function(){ /* 読み込み失敗時は内蔵データのみで動作 */ });
 }
 loadExternalData();
@@ -840,14 +946,61 @@ function toggleLearned(id){
 
 /* ================= views ================= */
 function esc(s){ return s; } /* content is trusted (authored) */
+function escHtml(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function renderWelcome(switching){
+  var names = Object.keys(profiles.users);
+  var userBtns = names.map(function(n){
+    var u = profiles.users[n];
+    var done = 0;
+    SUBJECTS.forEach(function(s){ done += Object.keys((u[s.id] && u[s.id].results) || {}).length; });
+    return '<button class="user-pick" data-user="'+escHtml(n)+'">👤 '+escHtml(n)
+      + '<span class="prog">'+done+'問 演習済み</span></button>';
+  }).join('');
+  app.innerHTML = ''
+  + '<div class="welcome pop">'
+  + '<div class="big-icon">🏛️</div>'
+  + '<h1>'+(switching ? 'ユーザーの切替え' : 'ようこそ！')+'</h1>'
+  + '<p>ニックネームを登録すると、あなた専用の進捗が<br>この端末に保存され、続きから再開できます</p>'
+  + '<input class="nick-input" id="nick" type="text" maxlength="12" placeholder="ニックネームを入力（例：そうた）" autocomplete="off">'
+  + '<button class="primary-btn" data-go="register" style="--sc:var(--c1)">はじめる</button>'
+  + (names.length ? '<div class="user-list"><span class="lbl">登録済みのユーザーから選ぶ</span>'+userBtns+'</div>' : '')
+  + (switching ? '<div style="margin-top:14px"><button class="secondary-btn" data-go="home">戻る</button></div>' : '')
+  + '</div>';
+  var inp = document.getElementById("nick");
+  inp.addEventListener("keydown", function(e){ if(e.key === "Enter") registerUser(); });
+  window.scrollTo(0,0);
+}
+function registerUser(){
+  var inp = document.getElementById("nick");
+  var name = (inp && inp.value || "").trim();
+  if(!name){ if(inp){ inp.focus(); inp.placeholder = "1文字以上入力してください"; } return; }
+  setUser(name);
+  renderHome();
+}
 
 function renderHome(){
   session = null;
   var total = QUESTIONS.length;
   var done = SUBJECTS.reduce(function(a,s){return a+answeredCount(s.id);},0);
   var pct = Math.round(done/total*100);
+  var resumeHtml = "";
+  if(store._session && store._session.sid){
+    var rs = SUBJECTS.find(function(x){ return x.id === store._session.sid; });
+    var rqs = subjQuestions(store._session.sid);
+    if(rs && store._session.pos < rqs.length){
+      resumeHtml = '<button class="resume-card pop" data-go="resume">'
+        + '<span class="icon">▶️</span>'
+        + '<span><b>前回の続きから再開</b><br><span class="sub">学科'+rs.roman+'（'+rs.name+'）'
+        + (store._session.pos+1)+'問目から・ここまで'+store._session.correct+'問正解</span></span>'
+        + '</button>';
+    }
+  }
   var html = ''
   + '<div class="home-head pop">'
+  + '  <button class="user-chip" data-go="users">👤 '+escHtml(profiles.current)+'</button>'
   + '  <button class="theme-toggle" data-go="theme">'+THEME_LABEL[store._theme || "auto"]+'</button>'
   + '  <div class="kicker">IKKYU KENCHIKUSHI DRILL</div>'
   + '  <h1>一級建築士 スキマ演習</h1>'
@@ -855,6 +1008,7 @@ function renderHome(){
   + '</div>'
   + '<div class="total-bar"><div class="lbl"><span>全体の進捗</span><span>'+done+' / '+total+'問</span></div>'
   + '<div class="meter"><i style="width:'+pct+'%"></i></div></div>'
+  + resumeHtml
   + '<div class="subj-list">';
   SUBJECTS.forEach(function(s){
     var qs = subjQuestions(s.id);
@@ -887,6 +1041,14 @@ function startQuiz(sid){
   var qs = subjQuestions(sid);
   var order = qs.map(function(_,i){return i;});
   session = { sid:sid, order:order, pos:0, correct:0, streak:0, log:[] };
+  store._session = null; save();
+  renderQuestion();
+}
+function resumeSession(){
+  var sv = store._session;
+  if(!sv || !sv.sid){ renderHome(); return; }
+  session = { sid:sv.sid, order:sv.order, pos:sv.pos,
+    correct:sv.correct, streak:sv.streak, log:sv.log || [] };
   renderQuestion();
 }
 
@@ -909,6 +1071,7 @@ function renderQuestion(){
     choicesHtml += '<button class="choice'+(q.numOnly?' num-only':'')+'" data-pick="'+i+'">'
       + '<span class="n">'+i+'</span><span>'+label+'</span></button>';
   }
+  var fq = q.freq || FREQ[q.tag];
   app.innerHTML = ''
   + '<div style="--sc:'+col.c+';--sc-bg:'+col.bg+'">'
   + '<div class="quiz-top">'
@@ -918,7 +1081,9 @@ function renderQuestion(){
   + '  <div class="meter"><i style="width:'+pct+'%;background:'+col.c+'"></i></div></div>'
   + '</div>'
   + '<div class="pop">'
-  + '<div class="q-tagline"><span class="chip">'+q.tag+'</span></div>'
+  + '<div class="q-tagline"><span class="chip">'+q.tag+'</span>'
+  + (fq ? '<span class="chip freq">📊 '+fq+'</span>' : '')
+  + '</div>'
   + '<div class="q-text">'+body+'</div>'
   + '<div class="choices">'+choicesHtml+'</div>'
   + '<div id="feedback"></div>'
@@ -936,6 +1101,13 @@ function answer(pick){
   session.log.push({qi:qi, ok:ok});
   store[sid] = store[sid] || {results:{}};
   store[sid].results[qi] = ok;
+  /* 続きから再開用にセッションを保存（最終問なら消去） */
+  if(session.pos < qs.length-1){
+    store._session = { sid:session.sid, order:session.order, pos:session.pos+1,
+      correct:session.correct, streak:session.streak, log:session.log };
+  }else{
+    store._session = null;
+  }
   save();
 
   var btns = app.querySelectorAll(".choice");
@@ -950,8 +1122,8 @@ function answer(pick){
   var fb = document.getElementById("feedback");
   fb.innerHTML = ''
   + '<div class="verdict '+(ok?'ok':'ng')+' pop">'+(ok?'✅ 正解！':'❌ 不正解… 正答は「'+q.ans+'」')+'</div>'
-  + '<div class="core pop"><b>ここだけ覚える</b>'+q.core+'</div>'
-  + '<details class="more"><summary>詳しい解説</summary><div class="body">'+q.detail+'</div></details>'
+  + '<div class="core pop"><b>ここだけ覚える</b>'+frac(q.core)+'</div>'
+  + '<details class="more"><summary>詳しい解説</summary><div class="body">'+frac(q.detail)+'</div></details>'
   + '<button class="next-btn" data-go="next">'+(last?'結果を見る':'次の問題 →')+'</button>';
   fb.querySelector(".next-btn").focus({preventScroll:true});
 }
@@ -968,7 +1140,7 @@ function renderResult(){
   var review = session.log.map(function(l){
     var q = qs[l.qi];
     return '<div class="item"><span class="mark '+(l.ok?'ok':'ng')+'">'+(l.ok?'○':'×')+'</span>'
-      + '<span><b>'+q.tag+'</b><br>'+q.core+'</span></div>';
+      + '<span><b>'+q.tag+'</b><br>'+frac(q.core)+'</span></div>';
   }).join('');
   app.innerHTML = ''
   + '<div style="--sc:'+col.c+';--sc-bg:'+col.bg+'">'
@@ -1004,7 +1176,7 @@ function renderCards(){
     return '<div class="mcard'+(isL?' learned':'')+'" style="--mc:var('+s.color+')">'
       + '<div class="front"><span class="subj-dot"></span><b>'+c.front+'</b></div>'
       + (open
-        ? '<div class="back pop">'+c.back+'</div>'
+        ? '<div class="back pop">'+frac(c.back)+'</div>'
           + '<div class="actions">'
           + '<button class="learn-btn'+(isL?' on':'')+'" data-learn="'+c.id+'">'+(isL?'✓ 覚えた！':'覚えた にする')+'</button>'
           + '<button class="learn-btn" data-hide="'+c.id+'">閉じる</button>'
@@ -1045,7 +1217,7 @@ function renderTrends(){
 /* ================= events ================= */
 function findCard(id){ return CARDS.find(function(c){ return c.id === id; }); }
 app.addEventListener("click", function(e){
-  var t = e.target.closest("[data-pick],[data-go],[data-ctab],[data-csubj],[data-reveal],[data-hide],[data-learn]");
+  var t = e.target.closest("[data-pick],[data-go],[data-ctab],[data-csubj],[data-reveal],[data-hide],[data-learn],[data-user]");
   if(!t) return;
   if(t.hasAttribute("data-pick")){ answer(+t.getAttribute("data-pick")); return; }
   if(t.hasAttribute("data-ctab")){ cardsTab = t.getAttribute("data-ctab"); app._cardsScroll = 0; renderCards(); return; }
@@ -1053,9 +1225,13 @@ app.addEventListener("click", function(e){
   if(t.hasAttribute("data-reveal")){ findCard(t.getAttribute("data-reveal"))._open = true; app._cardsScroll = window.scrollY; renderCards(); return; }
   if(t.hasAttribute("data-hide")){ findCard(t.getAttribute("data-hide"))._open = false; app._cardsScroll = window.scrollY; renderCards(); return; }
   if(t.hasAttribute("data-learn")){ toggleLearned(t.getAttribute("data-learn")); app._cardsScroll = window.scrollY; renderCards(); return; }
+  if(t.hasAttribute("data-user")){ setUser(t.getAttribute("data-user")); renderHome(); return; }
   var go = t.getAttribute("data-go");
   if(go==="home") renderHome();
   else if(go==="theme") cycleTheme();
+  else if(go==="users") renderWelcome(true);
+  else if(go==="register") registerUser();
+  else if(go==="resume") resumeSession();
   else if(go==="cards"){ app._cardsScroll = 0; renderCards(); }
   else if(go==="trends") renderTrends();
   else if(go==="quiz") startQuiz(t.getAttribute("data-sid"));
@@ -1066,11 +1242,23 @@ app.addEventListener("click", function(e){
     else renderResult();
   }
   else if(go==="reset"){
-    if(confirm("進捗（正解履歴）をすべてリセットしますか？")){ store={}; save(); renderHome(); }
+    if(confirm("「"+profiles.current+"」の進捗（正解履歴・覚えたカード）をリセットしますか？")){
+      profiles.users[profiles.current] = {};
+      store = profiles.users[profiles.current];
+      save(); applyTheme(); renderHome();
+    }
   }
 });
 
-renderHome();
+/* ---------- boot ---------- */
+if(profiles.current && profiles.users[profiles.current]){
+  store = profiles.users[profiles.current];
+  applyTheme();
+  renderHome();
+}else{
+  renderWelcome(false);
+}
 })();
 </script>
+
 </body></html>
