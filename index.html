@@ -56,8 +56,14 @@
   button{ font-family:inherit; font-size:inherit; color:inherit; }
   button:focus-visible{ outline:3px solid var(--c1); outline-offset:2px; }
 
-  /* ---------- home ---------- */
-  .home-head{ text-align:center; padding:34px 0 6px; }
+  /* ---------- theme toggle ---------- */
+  .theme-toggle{
+    position:absolute; top:0; right:0;
+    border:1.5px solid var(--line); background:var(--card); color:var(--ink2);
+    border-radius:99px; padding:7px 13px; cursor:pointer; font-size:.78rem;
+  }
+  .home-head{ text-align:center; padding:60px 0 6px; position:relative; }
+  .home-head .theme-toggle{ top:14px; }
   .home-head .kicker{ font-family:var(--mono); font-size:.72rem; letter-spacing:.2em; color:var(--muted); }
   .home-head h1{ font-family:var(--serif); font-size:1.5rem; margin:.4rem 0 .2rem; font-weight:600; }
   .home-head p{ margin:0; color:var(--ink2); font-size:.86rem; }
@@ -215,6 +221,46 @@
   .trend-card h3::before{ content:""; width:8px; height:8px; border-radius:2px; background:var(--sc); }
   .trend-card ul{ margin:0; padding-left:1.2em; font-size:.85rem; color:var(--ink2); display:flex; flex-direction:column; gap:6px; }
   .trend-card li b{ color:var(--ink); }
+
+  /* ---------- memo cards ---------- */
+  .tabs{ display:flex; gap:8px; margin:12px 0 10px; }
+  .tab{
+    flex:1; border:1.5px solid var(--line); background:var(--card); color:var(--ink2);
+    border-radius:12px; padding:10px; cursor:pointer; font-size:.88rem; font-weight:700;
+  }
+  .tab.on{ border-color:var(--c1); color:var(--c1); background:var(--c1-bg); }
+  .filter-row{ display:flex; gap:6px; overflow-x:auto; padding-bottom:6px; margin-bottom:8px; }
+  .fchip{
+    flex:0 0 auto; border:1.5px solid var(--line); background:var(--card); color:var(--ink2);
+    border-radius:99px; padding:5px 13px; cursor:pointer; font-size:.78rem;
+  }
+  .fchip.on{ border-color:var(--fc,var(--c1)); color:var(--fc,var(--c1)); background:var(--fc-bg,var(--c1-bg)); font-weight:700; }
+  .memo-progress{ font-size:.76rem; color:var(--muted); margin:2px 2px 10px; font-variant-numeric:tabular-nums; }
+  .mcard{
+    background:var(--card); border:1.5px solid var(--line); border-radius:14px;
+    padding:13px 14px; margin-bottom:10px;
+  }
+  .mcard.learned{ opacity:.62; }
+  .mcard .front{ display:flex; align-items:flex-start; gap:9px; }
+  .mcard .subj-dot{
+    flex:0 0 auto; width:10px; height:10px; border-radius:3px; margin-top:8px; background:var(--mc,var(--c1));
+  }
+  .mcard .front b{ font-size:.94rem; line-height:1.6; }
+  .mcard .reveal-btn{
+    margin-top:10px; width:100%; border:1.5px dashed var(--line); background:none; color:var(--ink2);
+    border-radius:10px; padding:10px; cursor:pointer; font-size:.84rem;
+  }
+  .mcard .back{
+    margin-top:10px; border-top:1px dashed var(--line); padding-top:10px;
+    font-size:.88rem; color:var(--ink2);
+  }
+  .mcard .back .formula{ margin:6px 0; }
+  .mcard .actions{ display:flex; gap:8px; margin-top:10px; }
+  .learn-btn{
+    flex:1; border:1.5px solid var(--line); background:var(--card); color:var(--ink2);
+    border-radius:10px; padding:9px; cursor:pointer; font-size:.82rem;
+  }
+  .learn-btn.on{ border-color:var(--ok); color:var(--ok); background:var(--ok-bg); font-weight:700; }
 
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; animation:none !important; }
@@ -584,6 +630,78 @@ var QUESTIONS = [
   detail:"<p>支保工の水平荷重は「鉛直荷重の5%（パイプサポート等）または2.5%」として見込む。地震力は組み合わせない。せき板存置（5N/mm²）・支保工取外し（12N/mm²＋計算確認）の数値もセットで。</p>" }
 ];
 
+/* ---------- memo cards（数式・重要語句） ---------- */
+/* {id, cat:"formula"|"term", subj, front, back(html)} */
+var CARDS = [
+/* === 数式：環境・設備 === */
+{id:"f01",cat:"formula",subj:"k2",front:"熱貫流抵抗・熱貫流率",back:"<div class='formula'>R = 1/αi + Σ(d/λ) + 1/αo\nU = 1/R [W/(m²·K)]</div>表面熱伝達抵抗（1/α）は壁厚と無関係。だから壁厚2倍でもRは2倍にならない。"},
+{id:"f02",cat:"formula",subj:"k2",front:"必要換気量（CO₂基準）",back:"<div class='formula'>Q = M / (Ci − Co)</div>発生量M÷濃度差。居室の必要換気量は1人あたり約30m³/hが目安。"},
+{id:"f03",cat:"formula",subj:"k2",front:"温度差換気（重力換気）",back:"<div class='formula'>Q ∝ A·√(h·Δt)</div>開口面積に比例、上下開口の高低差hと内外温度差Δtの「平方根」に比例。h・Δtを4倍にしても換気量は2倍。"},
+{id:"f04",cat:"formula",subj:"k2",front:"点光源の照度（逆二乗則）",back:"<div class='formula'>E = I / r²　（面が傾くと ×cosθ）</div>距離2倍で照度1/4。入射角の余弦則とセットで。"},
+{id:"f05",cat:"formula",subj:"k2",front:"昼光率",back:"<div class='formula'>D = 室内のある点の照度 / 全天空照度 ×100%</div>直射日光は含めない。全天空照度が変わっても昼光率は変わらないのがポイント。"},
+{id:"f06",cat:"formula",subj:"k2",front:"音の距離減衰（点音源／線音源）",back:"<div class='formula'>点音源：距離2倍 → −6dB\n線音源（道路）：距離2倍 → −3dB</div>「6と3」の取り違えが定番の罠。"},
+{id:"f07",cat:"formula",subj:"k2",front:"音圧レベルの合成・吸音の効果",back:"<div class='formula'>同レベル2音源の合成：+3dB\n吸音面積2倍：−3dB</div>どちらも 10log₁₀2 ≈ 3dB。"},
+{id:"f08",cat:"formula",subj:"k2",front:"残響時間（Sabineの式）",back:"<div class='formula'>T = 0.161 V / A</div>室容積Vに比例、等価吸音面積Aに反比例。人が入るとAが増えてTは短くなる。"},
+{id:"f09",cat:"formula",subj:"k2",front:"直達日射量の射影関係",back:"<div class='formula'>J_H = J_N · sin h\nJ_V = J_N · cos h</div>h：太陽高度。高度60°と30°でsin・cosの値が入れ替わる。"},
+{id:"f10",cat:"formula",subj:"k2",front:"相対湿度と露点",back:"<div class='formula'>相対湿度 = 水蒸気分圧 / 飽和水蒸気分圧 ×100%</div>露点＝冷やしていって飽和（結露開始）する温度。温度が下がると飽和分圧が下がる→相対湿度は上がる。"},
+/* === 数式：構造 === */
+{id:"f11",cat:"formula",subj:"k4",front:"断面性能（長方形断面）",back:"<div class='formula'>I = bh³/12（断面二次モーメント）\nZ = bh²/6（断面係数）\nZp = bh²/4（塑性断面係数）</div>hの効き方（3乗・2乗）を体で覚える。"},
+{id:"f12",cat:"formula",subj:"k4",front:"応力度と核半径",back:"<div class='formula'>σ = N/A ± M/Z</div>全断面圧縮でいられる限界は e ≤ D/6（核半径）。台形分布の問題は「平均＋曲げ」に分解。"},
+{id:"f13",cat:"formula",subj:"k4",front:"たわみの4つの型",back:"<div class='formula'>片持ち・先端集中：Pl³/3EI\n単純梁・中央集中：Pl³/48EI\n単純梁・等分布：5wl⁴/384EI\n片持ち・等分布：wl⁴/8EI</div>張出し梁は「支点回転×腕」を足し忘れない。"},
+{id:"f14",cat:"formula",subj:"k4",front:"弾性座屈荷重と座屈長さ",back:"<div class='formula'>Pe = π²EI / le²</div>座屈長さ係数：両端固定0.5／固定+ピン0.7／両端ピン1.0／固定+自由（水平移動自由）2.0。移動が自由だとleは大きくなる。"},
+{id:"f15",cat:"formula",subj:"k4",front:"固有周期",back:"<div class='formula'>T = 2π√(m/k)</div>質量が大きいほど・剛性が低いほど周期は長い。建物高さが高いほどTは長い（略算 T=0.02h〜0.03h）。"},
+{id:"f16",cat:"formula",subj:"k4",front:"地震層せん断力",back:"<div class='formula'>Qi = Ci · ΣWi\nCi = Z · Rt · Ai · C₀</div>C₀：一次設計0.2以上／保有水平耐力計算1.0以上。Aiは上階ほど大きい。Rtは軟弱地盤ほど大きい。"},
+{id:"f17",cat:"formula",subj:"k4",front:"必要保有水平耐力",back:"<div class='formula'>Qun = Ds · Fes · Qud</div>Ds：構造特性係数（靱性が高いほど小さい、0.25〜0.55）。Fes：剛性率・偏心率による割増し（1.0以上）。"},
+{id:"f18",cat:"formula",subj:"k4",front:"四分割法（木造壁量）",back:"<div class='formula'>壁量充足率 = 存在壁量 / 必要壁量\n壁率比 = 小さい方 / 大きい方 ≥ 0.5</div>両側の充足率がともに1超なら壁率比の検討は不要。"},
+{id:"f19",cat:"formula",subj:"k4",front:"崩壊荷重（仮想仕事法）",back:"<div class='formula'>Pu·δ = Σ(Mp·θ)</div>節点のヒンジは取り合う部材のMpの「小さい方」。ヒンジが生じない部材のMpは計算に使わない。"},
+{id:"f20",cat:"formula",subj:"k4",front:"鋼材のヤング係数",back:"<div class='formula'>E = 2.05×10⁵ N/mm²</div>SS400でも高張力鋼でも「一定」。強度が上がってもEは変わらない＝たわみは材質グレードでは改善しない。"},
+/* === 語句：計画 === */
+{id:"t01",cat:"term",subj:"k1",front:"TOD（公共交通指向型開発）",back:"公共交通の駅を核に、自動車に過度に依存しないコンパクトな市街地を形成する開発手法。"},
+{id:"t02",cat:"term",subj:"k1",front:"BID（Business Improvement District）",back:"地区内の不動産所有者・事業者から徴収した負担金で、<b>民間主体</b>が地区の維持管理・活性化を行う仕組み。「行政主体」と書かれたら誤り。"},
+{id:"t03",cat:"term",subj:"k1",front:"エリアマネジメント",back:"住民・事業者・地権者等の<b>民間が主体</b>となり、地域の環境や価値を維持・向上させる継続的な取組み。"},
+{id:"t04",cat:"term",subj:"k1",front:"コンセッション方式",back:"利用料金を徴収する公共施設で、<b>所有権は公共に残したまま運営権のみ</b>を民間に設定する方式。"},
+{id:"t05",cat:"term",subj:"k1",front:"BOT方式／BTO方式",back:"BOT：建設→<b>運営</b>→期間満了後に所有権移転。BTO：建設→<b>即</b>所有権移転→運営。移転のタイミングの違い。"},
+{id:"t06",cat:"term",subj:"k1",front:"SPC（特別目的会社）",back:"PFI等の特定事業のためだけに設立される会社。他の投資は行わず、契約期間が終われば解散。"},
+{id:"t07",cat:"term",subj:"k1",front:"CM方式",back:"発注者の側に立つコンストラクション・マネージャーが、設計・発注・施工の各段階でマネジメント業務を行う方式。"},
+{id:"t08",cat:"term",subj:"k1",front:"VFM（Value For Money）",back:"支払いに対して最も価値の高いサービスを供給するという考え方。PFI事業の採否判断の指標。"},
+/* === 語句：環境・設備 === */
+{id:"t09",cat:"term",subj:"k2",front:"PMV／PPD",back:"PMV：温熱6要素（温度・湿度・気流・放射・代謝量・着衣量）による温熱快適性の予測平均申告。PPD：予測不満足者率。PMV=0でもPPDは5%残る。"},
+{id:"t10",cat:"term",subj:"k2",front:"コインシデンス効果",back:"入射音の波長と板のたわみ振動が一致して、特定の周波数で<b>遮音性能が低下</b>する現象。"},
+{id:"t11",cat:"term",subj:"k2",front:"フラッターエコー",back:"平行な反射面の間で音が多重反射して生じる「ビィーン」という反復反射音。鳴き竜。"},
+{id:"t12",cat:"term",subj:"k2",front:"演色評価数Ra",back:"光源が物の色をどれだけ自然に見せるかの指標。100に近いほど演色性が良い。色温度とは別物。"},
+{id:"t13",cat:"term",subj:"k2",front:"ZEB／ZEH",back:"年間の一次エネルギー消費量の収支をゼロに近づけた建築（B）／住宅（H）。ZEB Ready、Nearly ZEB等の段階がある。"},
+{id:"t14",cat:"term",subj:"k2",front:"BEI／PAL*",back:"BEI：設計一次エネ消費量÷基準値（1.0以下で適合）。PAL*：ペリメーターゾーンの年間熱負荷÷床面積。外皮性能の指標。"},
+{id:"t15",cat:"term",subj:"k2",front:"COP（成績係数）",back:"冷凍機・ヒートポンプの効率＝出力（冷温熱）÷入力（電力等）。水熱源HPは空気熱源よりCOPが高い。"},
+{id:"t16",cat:"term",subj:"k2",front:"フリークーリング",back:"冬期・中間期に冷凍機を運転せず、冷却塔の冷却水で直接冷房する省エネ手法。"},
+/* === 語句：法規 === */
+{id:"t17",cat:"term",subj:"k3",front:"主要構造部",back:"壁・柱・床・はり・屋根・階段。<b>基礎は含まない</b>（構造耐力上主要な部分には含む）。最下階の床、間仕切用の壁等も除く。"},
+{id:"t18",cat:"term",subj:"k3",front:"延焼のおそれのある部分",back:"隣地境界線・道路中心線等から、1階は3m以下、2階以上は5m以下の距離にある建築物の部分。"},
+{id:"t19",cat:"term",subj:"k3",front:"防火区画の3種類",back:"面積区画（1,500m²等ごと）／竪穴区画（階段・吹抜け等）／異種用途区画。それぞれ区画する理由が違う。"},
+{id:"t20",cat:"term",subj:"k3",front:"既存不適格建築物",back:"建築時は適法だったが、法改正で現行規定に適合しなくなった建築物。違反建築物ではなく、増改築時等に現行法適合が求められる。"},
+{id:"t21",cat:"term",subj:"k3",front:"接道義務",back:"建築物の敷地は、原則として幅員4m以上の道路に<b>2m以上</b>接しなければならない（法43条）。"},
+{id:"t22",cat:"term",subj:"k3",front:"特定行政庁",back:"建築主事（建築副主事）を置く市町村ではその長、それ以外では都道府県知事。許可・認定の主体。"},
+{id:"t23",cat:"term",subj:"k3",front:"天空率",back:"斜線制限（道路・隣地・北側）に適合する建築物と同程度以上の天空率を確保すれば、斜線制限を適用除外できる制度。"},
+{id:"t24",cat:"term",subj:"k3",front:"特別特定建築物（バリアフリー法）",back:"物販店・病院・ホテル等。<b>2,000m²以上の新築等で基準適合が義務</b>。事務所等の「特定建築物」は努力義務。"},
+/* === 語句：構造 === */
+{id:"t25",cat:"term",subj:"k4",front:"靱性と剛性",back:"靱性：降伏後の粘り強さ（変形能力）。剛性：変形のしにくさ。靱性が高いほどDs（構造特性係数）は小さくできる。"},
+{id:"t26",cat:"term",subj:"k4",front:"剛性率・偏心率",back:"剛性率：高さ方向の剛性バランス（6/10以上）。偏心率：平面のねじれ（15/100以下）。満たさないとルート2でFesによる割増し。"},
+{id:"t27",cat:"term",subj:"k4",front:"免震構造／制振構造",back:"免震：積層ゴム等で地震動を建物に伝えにくくする（周期を長くする）。制振：ダンパー等でエネルギーを吸収する。"},
+{id:"t28",cat:"term",subj:"k4",front:"幅厚比／細長比",back:"幅厚比：板要素の局部座屈の指標（小さいほど座屈しにくい）。細長比：部材全体の座屈の指標（小さいほど座屈しにくい）。"},
+{id:"t29",cat:"term",subj:"k4",front:"保有耐力接合",back:"接合部の破断耐力を部材の降伏耐力より<b>大きく</b>して、部材が先に降伏（エネルギー吸収）するようにする接合。"},
+{id:"t30",cat:"term",subj:"k4",front:"群杭効果",back:"杭が密集すると周面摩擦の影響範囲が重なり、支持力が単杭の合計より<b>低下</b>する現象。"},
+{id:"t31",cat:"term",subj:"k4",front:"液状化",back:"緩い飽和砂質地盤が地震動で間隙水圧上昇→有効応力喪失。水平地盤反力係数を低減して杭を検討。"},
+{id:"t32",cat:"term",subj:"k4",front:"冷間成形角形鋼管の割増し",back:"成形時の加工硬化で実際の降伏点が公称値を上回るため、柱の設計用応力を割り増して検討する。"},
+/* === 語句：施工 === */
+{id:"t33",cat:"term",subj:"k5",front:"ヒービング／ボイリング／盤ぶくれ",back:"ヒービング：粘性土の回り込み隆起→根入れ延長。ボイリング：砂質土の湧き上がり→止水壁根入れ。盤ぶくれ：被圧水による持ち上げ→ディープウェル減圧。"},
+{id:"t34",cat:"term",subj:"k5",front:"コールドジョイント",back:"打重ね時間超過で先打ちコンクリートと一体化しない打継ぎ目。外気温25℃未満150分／25℃以上120分以内に打ち重ねる。"},
+{id:"t35",cat:"term",subj:"k5",front:"ブリーディング／レイタンス",back:"ブリーディング：打込み後に水が浮上する現象。レイタンス：その水と共に浮上した微細物の脆弱層→打継ぎ前に除去。"},
+{id:"t36",cat:"term",subj:"k5",front:"構造体強度補正値S",back:"調合管理強度＝品質基準強度＋S。Sは打込みから材齢28日間の予想平均気温に応じて3または6N/mm²。"},
+{id:"t37",cat:"term",subj:"k5",front:"ガス圧接の合格基準",back:"ふくらみ直径1.4d以上／長さ1.1d以上／偏心量d/5以下。外れたら切り取って再圧接（現場判断でOKにしない）。"},
+{id:"t38",cat:"term",subj:"k5",front:"トルシア形高力ボルト",back:"所定トルクでピンテールが破断する高力ボルト。検査はピンテール破断＋マークのずれ（共回り・軸回りなし）を確認。"},
+{id:"t39",cat:"term",subj:"k5",front:"あと施工アンカー（接着系カプセル方式）",back:"アンカー筋を<b>回転させながら</b>押し込み、カプセル内の接着剤を撹拌・充塡させる。仮固定用でも構造耐力上主要な柱には打たない。"},
+{id:"t40",cat:"term",subj:"k5",front:"湿潤養生期間（標準・短期）",back:"早強3日以上／普通・中庸熱5日以上／高炉B種等の混合セメントB種は<b>7日以上</b>。"}
+];
+
 /* ---------- trends (compact) ---------- */
 var TRENDS = {
   k1:{ pts:["<b>No.18〜20（契約約款・積算・マネジメント）は10年間皆勤。</b>最優先で固定得点化する",
@@ -613,6 +731,17 @@ var TRENDS = {
       rank:["コンクリート工事 20問","鉄骨工事 20問","改修工事 20問","躯体系1問枠（仮設〜型枠）各10問","仕上げ系 各10問","契約・監理系 各10問"] }
 };
 
+/* ================= 外部データ（Google Sheets等） =================
+   Google Sheetsを「ファイル → 共有 → ウェブに公開 → CSV」で公開し、
+   そのURLを下の SHEET_CSV_URL に貼ると、追加の問題・暗記カードを読み込みます。
+   URLパラメータ ?data=<CSVのURL> でも指定できます。
+   CSVの1行目（ヘッダー）: kind,subj,tag,text,c1,c2,c3,c4,ans,core,detail,front,back
+   - kind: quiz（4択問題）/ formula（数式カード）/ term（語句カード）
+   - subj: k1〜k5（学科Ⅰ〜Ⅴ）
+   - quiz行: tag,text,c1〜c4,ans(1〜4),core,detail を使用
+   - formula/term行: front,back を使用                                   */
+var SHEET_CSV_URL = "";
+
 /* ================= state ================= */
 var KEY = "ikkyu-quiz-v1";
 var store = load();
@@ -633,6 +762,81 @@ function correctCount(sid){
 
 var app = document.getElementById("app");
 var session = null; /* {sid, order:[idx...], pos, correct, streak, log:[{qi,ok}]} */
+var cardsTab = "formula", cardsSubj = "all";
+
+/* ---------- theme ---------- */
+var THEME_LABEL = { auto:"🌗 自動", light:"☀️ ライト", dark:"🌙 ダーク" };
+function applyTheme(){
+  var t = store._theme || "auto";
+  if(t === "auto") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", t);
+}
+function cycleTheme(){
+  var seq = ["auto","light","dark"];
+  var cur = store._theme || "auto";
+  store._theme = seq[(seq.indexOf(cur)+1) % 3];
+  save(); applyTheme(); renderHome();
+}
+applyTheme();
+
+/* ---------- CSV loader (Google Sheets等) ---------- */
+function parseCSV(text){
+  var rows = [], row = [], cur = "", inQ = false;
+  for(var i=0;i<text.length;i++){
+    var ch = text[i];
+    if(inQ){
+      if(ch === '"'){ if(text[i+1] === '"'){ cur += '"'; i++; } else inQ = false; }
+      else cur += ch;
+    }else{
+      if(ch === '"') inQ = true;
+      else if(ch === ","){ row.push(cur); cur = ""; }
+      else if(ch === "\n" || ch === "\r"){
+        if(ch === "\r" && text[i+1] === "\n") i++;
+        row.push(cur); cur = "";
+        if(row.some(function(c){return c !== "";})) rows.push(row);
+        row = [];
+      }
+      else cur += ch;
+    }
+  }
+  row.push(cur);
+  if(row.some(function(c){return c !== "";})) rows.push(row);
+  return rows;
+}
+function loadExternalData(){
+  var url = new URLSearchParams(location.search).get("data") || SHEET_CSV_URL;
+  if(!url) return;
+  fetch(url).then(function(r){ return r.text(); }).then(function(text){
+    var rows = parseCSV(text);
+    if(rows.length < 2) return;
+    var head = rows[0].map(function(h){ return h.trim().toLowerCase(); });
+    var added = 0;
+    rows.slice(1).forEach(function(r, idx){
+      var o = {};
+      head.forEach(function(h, i){ o[h] = (r[i] || "").trim(); });
+      if(!/^k[1-5]$/.test(o.subj)) return;
+      if(o.kind === "quiz" && o.text && o.c1 && o.ans){
+        QUESTIONS.push({ subj:o.subj, tag:o.tag || "追加問題", text:o.text,
+          choices:[o.c1,o.c2,o.c3,o.c4], ans:+o.ans,
+          core:o.core || "", detail:o.detail || "" });
+        added++;
+      }else if((o.kind === "formula" || o.kind === "term") && o.front && o.back){
+        CARDS.push({ id:"x"+idx, cat:o.kind, subj:o.subj, front:o.front, back:o.back });
+        added++;
+      }
+    });
+    if(added && !session) renderHome();
+  }).catch(function(){ /* 読み込み失敗時は内蔵データのみで動作 */ });
+}
+loadExternalData();
+
+/* ---------- memo cards state ---------- */
+function cardLearned(id){ return !!(store._cards && store._cards[id]); }
+function toggleLearned(id){
+  store._cards = store._cards || {};
+  if(store._cards[id]) delete store._cards[id]; else store._cards[id] = true;
+  save();
+}
 
 /* ================= views ================= */
 function esc(s){ return s; } /* content is trusted (authored) */
@@ -644,6 +848,7 @@ function renderHome(){
   var pct = Math.round(done/total*100);
   var html = ''
   + '<div class="home-head pop">'
+  + '  <button class="theme-toggle" data-go="theme">'+THEME_LABEL[store._theme || "auto"]+'</button>'
   + '  <div class="kicker">IKKYU KENCHIKUSHI DRILL</div>'
   + '  <h1>一級建築士 スキマ演習</h1>'
   + '  <p>1問ずつ・即答え合わせ。5分から始められます</p>'
@@ -664,8 +869,12 @@ function renderHome(){
       + '<span class="meter"><i style="width:'+p+'%"></i></span>'
       + '</button>';
   });
+  var learnedN = Object.keys(store._cards || {}).length;
   html += '</div>'
   + '<div class="home-foot">'
+  + '<button class="ghost-btn" data-go="cards" style="border-style:solid;font-weight:700;color:var(--ink)">🗂 暗記カード（数式・重要語句）'
+  + (learnedN ? '　<span style="color:var(--muted);font-weight:500">' + learnedN + '/' + CARDS.length + ' 覚えた</span>' : '')
+  + '</button>'
   + '<button class="ghost-btn" data-go="trends">📈 出題傾向のまとめを見る</button>'
   + '<button class="ghost-btn" data-go="reset">進捗をリセット</button>'
   + '</div>'
@@ -776,6 +985,46 @@ function renderResult(){
   window.scrollTo(0,0);
 }
 
+function renderCards(){
+  var list = CARDS.filter(function(c){
+    return c.cat === cardsTab && (cardsSubj === "all" || c.subj === cardsSubj);
+  });
+  var learned = list.filter(function(c){ return cardLearned(c.id); }).length;
+  var subjChips = '<button class="fchip'+(cardsSubj==="all"?" on":"")+'" data-csubj="all">すべて</button>';
+  SUBJECTS.forEach(function(s){
+    var has = CARDS.some(function(c){ return c.cat === cardsTab && c.subj === s.id; });
+    if(!has) return;
+    subjChips += '<button class="fchip'+(cardsSubj===s.id?" on":"")+'" data-csubj="'+s.id
+      +'" style="--fc:var('+s.color+');--fc-bg:var('+s.colorBg+')">'+s.roman+' '+s.name+'</button>';
+  });
+  var items = list.map(function(c){
+    var s = SUBJECTS.find(function(x){ return x.id === c.subj; });
+    var isL = cardLearned(c.id);
+    var open = !!c._open;
+    return '<div class="mcard'+(isL?' learned':'')+'" style="--mc:var('+s.color+')">'
+      + '<div class="front"><span class="subj-dot"></span><b>'+c.front+'</b></div>'
+      + (open
+        ? '<div class="back pop">'+c.back+'</div>'
+          + '<div class="actions">'
+          + '<button class="learn-btn'+(isL?' on':'')+'" data-learn="'+c.id+'">'+(isL?'✓ 覚えた！':'覚えた にする')+'</button>'
+          + '<button class="learn-btn" data-hide="'+c.id+'">閉じる</button>'
+          + '</div>'
+        : '<button class="reveal-btn" data-reveal="'+c.id+'">タップで確認 ▸</button>')
+      + '</div>';
+  }).join('');
+  app.innerHTML = ''
+  + '<div class="quiz-top"><button class="icon-btn" data-go="home" aria-label="ホームへ戻る">←</button>'
+  + '<div class="mid"><b style="font-size:.95rem">暗記カード</b></div></div>'
+  + '<div class="tabs">'
+  + '<button class="tab'+(cardsTab==="formula"?" on":"")+'" data-ctab="formula">🧮 数式</button>'
+  + '<button class="tab'+(cardsTab==="term"?" on":"")+'" data-ctab="term">📖 重要語句</button>'
+  + '</div>'
+  + '<div class="filter-row">'+subjChips+'</div>'
+  + '<div class="memo-progress">覚えた '+learned+' / '+list.length+'　（「覚えた」にすると薄く表示されます）</div>'
+  + '<div class="pop">'+items+'</div>';
+  window.scrollTo(0, app._cardsScroll || 0);
+}
+
 function renderTrends(){
   var html = '<div class="quiz-top"><button class="icon-btn" data-go="home" aria-label="ホームへ戻る">←</button>'
     + '<div class="mid"><b style="font-size:.95rem">出題傾向まとめ（10年分・1,250問）</b></div></div>'
@@ -794,12 +1043,20 @@ function renderTrends(){
 }
 
 /* ================= events ================= */
+function findCard(id){ return CARDS.find(function(c){ return c.id === id; }); }
 app.addEventListener("click", function(e){
-  var t = e.target.closest("[data-pick],[data-go]");
+  var t = e.target.closest("[data-pick],[data-go],[data-ctab],[data-csubj],[data-reveal],[data-hide],[data-learn]");
   if(!t) return;
   if(t.hasAttribute("data-pick")){ answer(+t.getAttribute("data-pick")); return; }
+  if(t.hasAttribute("data-ctab")){ cardsTab = t.getAttribute("data-ctab"); app._cardsScroll = 0; renderCards(); return; }
+  if(t.hasAttribute("data-csubj")){ cardsSubj = t.getAttribute("data-csubj"); app._cardsScroll = 0; renderCards(); return; }
+  if(t.hasAttribute("data-reveal")){ findCard(t.getAttribute("data-reveal"))._open = true; app._cardsScroll = window.scrollY; renderCards(); return; }
+  if(t.hasAttribute("data-hide")){ findCard(t.getAttribute("data-hide"))._open = false; app._cardsScroll = window.scrollY; renderCards(); return; }
+  if(t.hasAttribute("data-learn")){ toggleLearned(t.getAttribute("data-learn")); app._cardsScroll = window.scrollY; renderCards(); return; }
   var go = t.getAttribute("data-go");
   if(go==="home") renderHome();
+  else if(go==="theme") cycleTheme();
+  else if(go==="cards"){ app._cardsScroll = 0; renderCards(); }
   else if(go==="trends") renderTrends();
   else if(go==="quiz") startQuiz(t.getAttribute("data-sid"));
   else if(go==="retry") startQuiz(session.sid);

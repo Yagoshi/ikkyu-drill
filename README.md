@@ -2,8 +2,25 @@
 
 一級建築士「学科の試験」2016〜2025年の過去問1,250問を分析し、頻出テーマ別の1問1答ドリルにしたスマホ向け学習アプリ。
 
+**アプリ:** https://yagoshi.github.io/ikkyu-drill/
+
+## 機能
 - 1画面1問・タップで即答え合わせ・進捗自動保存（localStorage）
 - 学科Ⅳ（構造）は令和7年本試験の問題画像を使用
+- 暗記カード（数式20・重要語句40）：タップで確認→「覚えた」で管理
+- テーマ切替（自動／ライト／ダーク）：ホーム右上のボタン
 - 依存ライブラリなしの単一HTML
+
+## Google Sheetsで問題・カードを追加する
+1. Googleスプレッドシートを作成し、1行目にヘッダーを入れる：
+   `kind,subj,tag,text,c1,c2,c3,c4,ans,core,detail,front,back`
+2. 2行目以降にデータを入れる
+   - 4択問題: `kind=quiz` / `subj=k1〜k5` / `tag`（テーマ名） / `text`（問題文） / `c1〜c4`（選択肢） / `ans`（正答1〜4） / `core`（1行ポイント） / `detail`（詳しい解説）
+   - 数式カード: `kind=formula` / `subj` / `front`（表） / `back`（裏）
+   - 語句カード: `kind=term` / `subj` / `front` / `back`
+3. 「ファイル → 共有 → ウェブに公開 → カンマ区切り(.csv)」でURLを取得
+4. 使い方はどちらか：
+   - URLパラメータで指定: `https://yagoshi.github.io/ikkyu-drill/?data=<CSVのURL>`
+   - `index.html` 内の `SHEET_CSV_URL = ""` にURLを貼ってコミット
 
 ※ 私的学習用。試験問題の著作権は公益財団法人建築技術教育普及センターに帰属します。
