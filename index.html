@@ -1,4 +1,4 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><meta name="theme-color" content="#191712"><link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>"></head><body><title>一級建築士 スキマ演習</title>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><meta name="theme-color" content="#191712"><link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏛️</text></svg>"><title>一級建築士 スキマ演習</title></head><body>
 <style>
   :root{
     --bg:#f6f4ee;
@@ -310,6 +310,10 @@
 
   /* ---------- freq badge ---------- */
   .chip.freq{ background:var(--line); color:var(--ink2); font-weight:600; }
+
+  /* ---------- 外部データ読み込み結果 ---------- */
+  .ext-status{ font-size:.74rem; text-align:center; color:var(--muted); margin:8px 2px 0; }
+  .ext-status.ng{ color:var(--ng); }
 
   @media (prefers-reduced-motion: reduce){
     *{ transition:none !important; animation:none !important; }
@@ -909,31 +913,46 @@ function parseCSV(text){
   if(row.some(function(c){return c !== "";})) rows.push(row);
   return rows;
 }
+var extStatus = null; /* {ok, msg} 外部データ読み込みの結果（ホームに表示） */
+/* 外部データはHTMLを無効化して差し込む（?data=に細工したCSVを渡されてもスクリプトが動かないように）。
+   改行と {分子|分母} の分数記法だけ使える */
+function extText(s){ return escHtml(s || "").replace(/\n/g,"<br>"); }
 function loadExternalData(){
   var url = new URLSearchParams(location.search).get("data") || SHEET_CSV_URL;
   if(!url) return;
-  fetch(url).then(function(r){ return r.text(); }).then(function(text){
+  fetch(url).then(function(r){
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    return r.text();
+  }).then(function(text){
     var rows = parseCSV(text);
-    if(rows.length < 2) return;
+    if(rows.length < 2){ extStatus = { ok:false, msg:"外部データにデータ行がありません" }; refreshHome(); return; }
     var head = rows[0].map(function(h){ return h.trim().toLowerCase(); });
-    var added = 0;
+    var added = 0, skipped = 0;
     rows.slice(1).forEach(function(r, idx){
       var o = {};
       head.forEach(function(h, i){ o[h] = (r[i] || "").trim(); });
-      if(!/^k[1-5]$/.test(o.subj)) return;
-      if(o.kind === "quiz" && o.text && o.c1 && o.ans){
-        QUESTIONS.push({ subj:o.subj, tag:o.tag || "追加問題", text:o.text,
-          choices:[o.c1,o.c2,o.c3,o.c4], ans:+o.ans,
-          core:o.core || "", detail:o.detail || "" });
-        added++;
+      if(!/^k[1-5]$/.test(o.subj)){ skipped++; return; }
+      if(o.kind === "quiz"){
+        var ansN = +o.ans;
+        if(o.text && o.c1 && o.c2 && o.c3 && o.c4 && ansN >= 1 && ansN <= 4){
+          QUESTIONS.push({ subj:o.subj, tag:extText(o.tag) || "追加問題", text:extText(o.text),
+            choices:[o.c1,o.c2,o.c3,o.c4].map(extText), ans:ansN,
+            core:extText(o.core), detail:extText(o.detail) });
+          added++;
+        }else skipped++;
       }else if((o.kind === "formula" || o.kind === "term") && o.front && o.back){
-        CARDS.push({ id:"x"+idx, cat:o.kind, subj:o.subj, front:o.front, back:o.back });
+        CARDS.push({ id:"x"+idx, cat:o.kind, subj:o.subj, front:extText(o.front), back:extText(o.back) });
         added++;
-      }
+      }else skipped++;
     });
-    if(added && !session && store) renderHome();
-  }).catch(function(){ /* 読み込み失敗時は内蔵データのみで動作 */ });
+    extStatus = { ok:true, msg:"外部データ "+added+"件を読み込みました"+(skipped ? "（"+skipped+"行はスキップ）" : "") };
+    refreshHome();
+  }).catch(function(){
+    extStatus = { ok:false, msg:"外部データを読み込めませんでした。内蔵データのみで動作しています" };
+    refreshHome();
+  });
 }
+function refreshHome(){ if(!session && store) renderHome(); }
 loadExternalData();
 
 /* ---------- memo cards state ---------- */
@@ -987,10 +1006,9 @@ function renderHome(){
   var done = SUBJECTS.reduce(function(a,s){return a+answeredCount(s.id);},0);
   var pct = Math.round(done/total*100);
   var resumeHtml = "";
-  if(store._session && store._session.sid){
+  if(store._session && store._session.sid && store._session.order){
     var rs = SUBJECTS.find(function(x){ return x.id === store._session.sid; });
-    var rqs = subjQuestions(store._session.sid);
-    if(rs && store._session.pos < rqs.length){
+    if(rs && store._session.pos < store._session.order.length){
       resumeHtml = '<button class="resume-card pop" data-go="resume">'
         + '<span class="icon">▶️</span>'
         + '<span><b>前回の続きから再開</b><br><span class="sub">学科'+rs.roman+'（'+rs.name+'）'
@@ -1008,6 +1026,7 @@ function renderHome(){
   + '</div>'
   + '<div class="total-bar"><div class="lbl"><span>全体の進捗</span><span>'+done+' / '+total+'問</span></div>'
   + '<div class="meter"><i style="width:'+pct+'%"></i></div></div>'
+  + (extStatus ? '<p class="ext-status'+(extStatus.ok?'':' ng')+'">'+(extStatus.ok?'☁️ ':'⚠️ ')+extStatus.msg+'</p>' : '')
   + resumeHtml
   + '<div class="subj-list">';
   SUBJECTS.forEach(function(s){
@@ -1046,7 +1065,7 @@ function startQuiz(sid){
 }
 function resumeSession(){
   var sv = store._session;
-  if(!sv || !sv.sid){ renderHome(); return; }
+  if(!sv || !sv.sid || !sv.order){ renderHome(); return; }
   session = { sid:sv.sid, order:sv.order, pos:sv.pos,
     correct:sv.correct, streak:sv.streak, log:sv.log || [] };
   renderQuestion();
@@ -1057,8 +1076,11 @@ function renderQuestion(){
   var s = SUBJECTS.find(function(x){return x.id===sid;});
   var qs = subjQuestions(sid);
   var q = qs[session.order[session.pos]];
+  if(!q){ /* 保存データと問題データが食い違ったとき（外部CSVの変更等）は安全にホームへ */
+    session = null; store._session = null; save(); renderHome(); return;
+  }
   var col = subjColor(sid);
-  var pct = Math.round(session.pos/qs.length*100);
+  var pct = Math.round(session.pos/session.order.length*100);
   var body = '';
   if(q.img){
     body = '<img src="'+IMGS[q.img]+'" alt="過去問の問題図（拡大可）"><p class="imgnote">※ 令和7年本試験の問題（原本画像）。選択肢は画像内の1〜4。</p>';
@@ -1077,7 +1099,7 @@ function renderQuestion(){
   + '<div class="quiz-top">'
   + '  <button class="icon-btn" data-go="home" aria-label="ホームへ戻る">←</button>'
   + '  <div class="mid"><div class="who"><span>学科'+s.roman+'（'+s.name+'）</span>'
-  + '  <span>'+(session.pos+1)+' / '+qs.length+'　<span class="streak">'+(session.streak>=2?('🔥'+session.streak+'連続'):'')+'</span></span></div>'
+  + '  <span>'+(session.pos+1)+' / '+session.order.length+'　<span class="streak">'+(session.streak>=2?('🔥'+session.streak+'連続'):'')+'</span></span></div>'
   + '  <div class="meter"><i style="width:'+pct+'%;background:'+col.c+'"></i></div></div>'
   + '</div>'
   + '<div class="pop">'
@@ -1102,7 +1124,7 @@ function answer(pick){
   store[sid] = store[sid] || {results:{}};
   store[sid].results[qi] = ok;
   /* 続きから再開用にセッションを保存（最終問なら消去） */
-  if(session.pos < qs.length-1){
+  if(session.pos < session.order.length-1){
     store._session = { sid:session.sid, order:session.order, pos:session.pos+1,
       correct:session.correct, streak:session.streak, log:session.log };
   }else{
@@ -1118,7 +1140,7 @@ function answer(pick){
     else if(n === pick) b.classList.add("wrong");
     else b.classList.add("dim");
   });
-  var last = session.pos === qs.length-1;
+  var last = session.pos === session.order.length-1;
   var fb = document.getElementById("feedback");
   fb.innerHTML = ''
   + '<div class="verdict '+(ok?'ok':'ng')+' pop">'+(ok?'✅ 正解！':'❌ 不正解… 正答は「'+q.ans+'」')+'</div>'
@@ -1133,7 +1155,8 @@ function renderResult(){
   var s = SUBJECTS.find(function(x){return x.id===sid;});
   var qs = subjQuestions(sid);
   var col = subjColor(sid);
-  var n = qs.length, c = session.correct;
+  var n = session.order.length, c = session.correct;
+  var wrongN = session.log.filter(function(l){ return !l.ok; }).length;
   var msg = c===n ? "全問正解！この分野は仕上がっています"
         : c>=n*0.7 ? "合格ライン圏内。間違えた所だけ復習しましょう"
         : "間違えた問題の「ここだけ覚える」を見直してもう一周！";
@@ -1151,6 +1174,7 @@ function renderResult(){
   + '</div>'
   + '<div class="review">'+review+'</div>'
   + '<div class="stack">'
+  + (wrongN ? '<button class="primary-btn" data-go="retry-wrong" style="--sc:var(--ng)">✍️ 間違えた'+wrongN+'問だけもう一度</button>' : '')
   + '<button class="primary-btn" data-go="retry">もう一度この科目</button>'
   + '<button class="secondary-btn" data-go="home">ホームへ</button>'
   + '</div></div>';
@@ -1236,17 +1260,33 @@ app.addEventListener("click", function(e){
   else if(go==="trends") renderTrends();
   else if(go==="quiz") startQuiz(t.getAttribute("data-sid"));
   else if(go==="retry") startQuiz(session.sid);
+  else if(go==="retry-wrong"){
+    var wrong = session.log.filter(function(l){ return !l.ok; }).map(function(l){ return l.qi; });
+    session = { sid:session.sid, order:wrong, pos:0, correct:0, streak:0, log:[] };
+    store._session = null; save();
+    renderQuestion();
+  }
   else if(go==="next"){
-    var qs = subjQuestions(session.sid);
-    if(session.pos < qs.length-1){ session.pos++; renderQuestion(); }
+    if(session.pos < session.order.length-1){ session.pos++; renderQuestion(); }
     else renderResult();
   }
   else if(go==="reset"){
     if(confirm("「"+profiles.current+"」の進捗（正解履歴・覚えたカード）をリセットしますか？")){
-      profiles.users[profiles.current] = {};
+      var keptTheme = store._theme;
+      profiles.users[profiles.current] = keptTheme ? { _theme: keptTheme } : {};
       store = profiles.users[profiles.current];
       save(); applyTheme(); renderHome();
     }
+  }
+});
+
+/* 数字キー1〜4で回答（PC利用時） */
+document.addEventListener("keydown", function(e){
+  if(!session || e.altKey || e.ctrlKey || e.metaKey) return;
+  if(e.target && /^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+  if(/^[1-4]$/.test(e.key)){
+    var b = app.querySelector('.choice[data-pick="'+e.key+'"]');
+    if(b && !b.disabled) b.click();
   }
 });
 
